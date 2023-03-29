@@ -4,12 +4,18 @@ import {
   CreateDateColumn,
   DeleteDateColumn,
   Entity,
+  JoinTable,
+  ManyToMany,
+  OneToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
 
 import * as bcrypt from 'bcrypt';
 import { Exclude } from 'class-transformer';
+import { Group } from '../groups/group.entity';
+import { Question } from '../questions/question.entity';
+
 
 export enum userRole {
   ADMIN = 'admin',
@@ -40,6 +46,16 @@ export class User {
 
   @UpdateDateColumn()
   updated_at: Date;
+
+  @ManyToMany(() => Group, group => group.users)
+  @JoinTable()
+  groups: Group[];
+
+  @OneToMany(() => Group, group => group.admin)
+  adminOf: Group[];
+
+  @OneToMany(() => Question, question => question.user)
+  questions: Question[];
 
   @BeforeInsert()
   async hashPassword() {

@@ -1,8 +1,8 @@
-import { Body, Controller, Delete, Param, ParseIntPipe, Post, UseInterceptors } from "@nestjs/common";
+import { Body, Controller, Delete, ForbiddenException, Param, ParseIntPipe, Post, UseInterceptors } from "@nestjs/common";
 import { User } from "./user.entity";
 import { UsersService } from "./users.service";
 import { Get } from "@nestjs/common";
-import { createUserDto } from "./dto/createUser.dto";
+import { CreateUserDto } from "./dto/createUser.dto";
 
 
 @Controller('/users')
@@ -15,11 +15,11 @@ export class UsersController {
   }
 
   @Post()
-  async createUser(@Body('user') createUserDto: createUserDto): Promise<User> {
+  async createUser(@Body('user') createUserDto: CreateUserDto): Promise<any> {
     try {
       return this.usersService.createUser(createUserDto);
     } catch (error) {
-      throw new Error(error)
+      throw new ForbiddenException(error.message)
     }
   }
 
