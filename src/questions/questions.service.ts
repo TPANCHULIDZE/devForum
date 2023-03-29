@@ -18,10 +18,10 @@ export class QuestionsService {
   async findAll(groupId: number): Promise<Question[]> {
     try {
       const group = await this.groupsService.findGroupWithQuestions(groupId);
-      
+
       return group.questions;
-    } catch(error) {
-      throw new ForbiddenException(error.message)
+    } catch (error) {
+      throw new ForbiddenException(error.message);
     }
   }
 
@@ -31,7 +31,6 @@ export class QuestionsService {
     createQuestionDto: CreateQuestionDto,
   ): Promise<Question> {
     try {
-      
       const user = await this.authService.findUserByEmail(userInfo.email);
       const group = await this.groupsService.findOneById(groupId);
       const question = this.questionRepository.create({
@@ -46,4 +45,17 @@ export class QuestionsService {
     }
   }
 
+  async findQuestionsWithAnswers(questionId: number): Promise<Question> {
+    const question = await this.questionRepository.findOne({
+      where: { id: questionId },
+      relations: { answers: true },
+    });
+
+
+    return question;
+  }
+
+  async findOne(questionId: number): Promise<Question> {
+    return await this.questionRepository.findOneBy({id: questionId});
+  }
 }

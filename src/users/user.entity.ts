@@ -15,6 +15,7 @@ import * as bcrypt from 'bcrypt';
 import { Exclude } from 'class-transformer';
 import { Group } from '../groups/group.entity';
 import { Question } from '../questions/question.entity';
+import { Answer } from '../answers/answer.entity';
 
 
 export enum userRole {
@@ -46,6 +47,9 @@ export class User {
 
   @UpdateDateColumn()
   updated_at: Date;
+
+  @OneToMany(() => Answer, answer => answer.user)
+  answers: Answer[];
 
   @ManyToMany(() => Group, group => group.users)
   @JoinTable()

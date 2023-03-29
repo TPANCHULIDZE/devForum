@@ -64,4 +64,8 @@ export class UsersService {
       throw new ForbiddenException('user or password is incorrect');
     }
   }
+
+  async findUserById(userId: number): Promise<User> {
+    return await this.userRepository.findOneBy({id: userId})
+  }
 }
