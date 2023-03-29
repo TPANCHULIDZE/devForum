@@ -5,9 +5,9 @@ import {
   MinLength,
 } from 'class-validator';
 
-export class createUserDto {
+export class CreateUserDto {
   @IsString()
-  @MinLength(4, {
+  @MinLength(3, {
     message: 'username is too short, please use 4 charachter minimum',
   })
   @MaxLength(50, {
@@ -18,8 +18,8 @@ export class createUserDto {
   @IsEmail()
   email: string;
   
-  @IsString()1
-  @MinLength(8, {
+  @IsString()
+  @MinLength(7, {
     message: 'password is too short, please use 8 charachter minimum',
   })
   @MaxLength(50, {
