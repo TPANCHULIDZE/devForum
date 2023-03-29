@@ -37,4 +37,12 @@ export class AuthService {
     const {password, ...result} = user;
     return result;
   }
+
+  async findUserById(userId: number): Promise<User> {
+    try {
+      return this.usersService.findUserById(userId)
+    } catch (error) {
+      throw new ForbiddenException('user not found')
+    }
+  }
 }
