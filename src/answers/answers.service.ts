@@ -5,6 +5,7 @@ import { Repository } from 'typeorm';
 import { Answer, IsCorrect } from './answer.entity';
 import { QuestionsService } from '../questions/questions.service';
 import { CreateAnswerDto } from './dto/createAnswer.dto';
+import { MailerService } from '../shared/mailer.service';
 
 @Injectable()
 export class AnswersService {
@@ -12,6 +13,7 @@ export class AnswersService {
     @InjectRepository(Answer) private answerRepository: Repository<Answer>,
     private authService: AuthService,
     private questionsService: QuestionsService,
+    private mailerService: MailerService,
   ) {}
 
   async findAll(questionId: number): Promise<Answer[]> {
@@ -25,19 +27,23 @@ export class AnswersService {
 
   async createAnswer(userInfo: any, questionId: number, createAnswerDto: CreateAnswerDto): Promise<Answer> {
     try {
-      const question = await this.questionsService.findOne(questionId);
+      const question = await this.questionsService.findQuestionWithUser(questionId);
       const user = await this.authService.findUserByEmail(userInfo.email);
 
       if (user && question) {
         const answer = this.answerRepository.create({...createAnswerDto, user, question})
         
         await this.answerRepository.save(answer)
+
+        if (answer) {
+          // uncomment when end process
+          // this.sendEmailsToUser(user.email, question.user.id, answer.answer)
+        }
         return answer;
       } else {
         throw new UnauthorizedException('user or question not find')
       }
     } catch (error) {
-      console.log(error)
       throw new ForbiddenException(error.message)
     }
   }
@@ -61,5 +67,11 @@ export class AnswersService {
     } catch (error) {
       throw new UnauthorizedException(error.message);
     }
+  }
+
+  async sendEmailsToUser(email: string, authorId: number, answer: string): Promise<void> {
+    const user = await this.authService.findUserByEmail(email);
+    const author = await this.authService.findUserById(authorId)
+    this.mailerService.sendEmailAfterAnswer(author.email, user.username, answer)
   }
 }

@@ -58,4 +58,10 @@ export class QuestionsService {
   async findOne(questionId: number): Promise<Question> {
     return await this.questionRepository.findOneBy({id: questionId});
   }
+
+  async findQuestionWithUser(questionId: number): Promise<Question> {
+    const question = await this.questionRepository.findOne({where: {id: questionId}, relations: {user: true}})
+    question.user.password = null
+    return question;
+  }
 }
